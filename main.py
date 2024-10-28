@@ -38,6 +38,10 @@ def runner(config):
     train_model.run_training(model, optimizer, train_loader, val_loader, 
                 config['model_config']['n_epochs'], device)
 
+    print("saving the model")
+    model_state = {'state_dict':model.state_dict(), 'optimizer': optimizer.state_dict()}    
+    torch.save(model_state, "ftuned_md_bs_100.pth.tar")
+
 
 if __name__ == "__main__":
     config = load_config()

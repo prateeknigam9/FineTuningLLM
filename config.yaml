@@ -3,7 +3,7 @@ data_config:
   padding : True
   truncation : True
   max_seq_len : 250
-  train_batch_size : 16
+  train_batch_size : 100
   val_batch_size : 1
 
 model_config:

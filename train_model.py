@@ -1,6 +1,7 @@
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
 import torch
+import numpy as np
 
 def train_runner(model, optimizer, train_loader, device, epoch):
     model.train()
@@ -8,8 +9,8 @@ def train_runner(model, optimizer, train_loader, device, epoch):
     losses = []
     predicted = []
     actuals = []
-    # batch_itr = tqdm(enumerate(train_loader), total=len(train_loader))
-    for batch in tqdm(train_loader):
+    batch_itr = tqdm(enumerate(train_loader), total=len(train_loader))
+    for _,batch in batch_itr:
         complaint_ids = batch['complaint_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
         labels = batch['label'].to(device)
@@ -21,14 +22,15 @@ def train_runner(model, optimizer, train_loader, device, epoch):
         
         predicted.append(pred)
         actuals.append(labels)
+        losses.append(loss)
         
         loss.backward()
         optimizer.step()  
         
-        # batch_itr.set_postfix({"train_loss":loss})
-        print(f"Epoch {epoch}, Loss: {loss.item()}")
-        
-    return torch.mean(losses), accuracy_score(predicted, actuals)
+        batch_itr.set_postfix({"train_loss":loss})
+        # print(f"Epoch {epoch}, Loss: {loss.item()}")
+    f_loss = np.mean(losses)
+    return f_loss, accuracy_score(predicted, actuals)
         
 def val_runner(model, train_loader, device, epoch):
     model.eval()
@@ -36,8 +38,8 @@ def val_runner(model, train_loader, device, epoch):
     actuals = []
     losses = []
     with torch.no_grad():
-        # batch_itr = tqdm(enumerate(train_loader),total = len(train_loader))
-        for batch in tqdm(train_loader):
+        batch_itr = tqdm(enumerate(train_loader),total = len(train_loader))
+        for _,batch in batch_itr:
             complaint_ids = batch['complaint_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['label'].to(device)
@@ -50,10 +52,14 @@ def val_runner(model, train_loader, device, epoch):
             
             predicted.append(pred)
             actuals.append(labels)
+            losses.append(loss)
 
-            print(f"Epoch {epoch}, Loss: {loss.item()}")
-            
-    return torch.mean(losses), accuracy_score(predicted, actuals)
+            # print(f"Epoch {epoch}, Loss: {loss.item()}")
+            batch_itr.set_postfix({"train_loss":loss})
+    
+    f_loss = np.mean(losses)
+
+    return f_loss, accuracy_score(predicted, actuals)
         
 
 
