@@ -1,0 +1,10 @@
+data_config:
+  n_classes : 21
+  padding : True
+  truncation : True
+  max_seq_len : 250
+  train_batch_size : 16
+  val_batch_size : 1
+
+model_config:
+  n_epochs: 20
